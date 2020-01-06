@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>typescript demo</title>
+  <style>
+    body{margin:0}.floornav{position:fixed;top:100px;left:30px;opacity:0;transition:opacity .2s linear}.floornav.show{opacity:1}.floornav a{display:block;padding:10px;margin-bottom:1px;width:30px;height:30px;line-height:30px;background:skyblue;color:#fff;text-decoration:none;text-align:center;cursor:pointer;transition:all .3s}.floornav a.active{background:#f60}.floor{margin:0 auto;width:50%;min-height:50px;line-height:50px;background:gray;text-align:center;font-size:30px;color:#fff;border-top:2px solid #cbcbcb}.place{height:300px}p{text-align: center;color:#111e36;}
+  </style>
+</head>
+<body>
+  <!-- 楼层导航 -->
+  <div id="floornav" class="floornav">
+    <div>
+      <a href="#floor1">1楼</a>
+      <a href="#floor2">2楼</a>
+      <a href="#floor3"><span>3楼</span></a>
+      <a href="#floor4">4楼</a>
+      <a href="#floor5"><span>5楼</span></a>
+    </div>
+  </div>
+  <!-- 楼层内容 -->
+  <div class="floor">占位</div>
+  <div id="floor1" class="floor">这是1楼<br/>段落段落<br/>段落段落<br/>段落段落</div>
+  <p>段落段落</p>
+  <p>段落段落</p>
+  <div id="floor2" class="floor">这是2楼<br/>段落段落<br/>段落段落</div>
+  <p>段落段落</p>
+  <div id="floor3" class="floor">这是3楼<br/>这是3楼<br/>这是3楼<br/>这是3楼<br/></div>
+  <div class="floor place">占位</div>
+  <div class="floor place">占位</div>
+  <div class="floor place">占位</div>
+  <div class="floor place">占位</div>
+  <div id="floor4" class="floor">这是4楼<br/>段落段落<br/>段落段落<br/>段落段落</div>
+  <div id="floor5" class="floor">这是5楼<br/>段落段落<br/>段落段落</div>
+  <div class="floor place">占位</div>
+  <div class="floor place">占位</div>
+  <div class="floor place">占位</div>
+  <div class="floor place">占位</div>
+</body>
+<script src="./js/main.js"></script>
+</html>
