@@ -1,14 +1,26 @@
+const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: './src/ts/floornav.ts',
   output: {
-    filename: 'floornav.min.js',
+    path: path.resolve(__dirname, '..', 'dist'),
+    filename: '[name].js',
+    library: 'FloornavLibrary',
+    libraryTarget: 'umd'
+  },
+  externals: {
+    lodash: {
+      commonjs: 'lodash',
+      commonjs2: 'lodash',
+      umd: 'lodash',
+      root: '_'
+    }
   },
   resolve: {
     extensions: [ '.js', '.ts', '.tsx'],
   },
-  devtool: 'inline-source-map',
+  // devtool: 'inline-source-map',
   module: {
     rules: [
       {

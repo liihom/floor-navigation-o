@@ -145,6 +145,10 @@ class Floornav implements Nav {
     }
   }
 
+  private _fnCheck = () => {
+    this._check();
+  }
+
   private _initJump() {
     const self = this;
     const { container, scrollOffset } = self.config;
@@ -190,10 +194,10 @@ class Floornav implements Nav {
     });
   }
 
-  public _initCheck() {
+  private _initCheck() {
     const _self = this;
-    _self.config.container.addEventListener('scroll', _self._check.bind(_self));
-    _self.config.container.addEventListener('resize', _self._check.bind(_self));
+    _self.config.container.addEventListener('scroll', this._fnCheck);
+    _self.config.container.addEventListener('resize', this._fnCheck);
   }
 
   private _scrollTo(target: Element, scrollTo: number, time: number = 300) {
@@ -204,8 +208,8 @@ class Floornav implements Nav {
     const _self = this;
     const { container } = _self.config;
 
-    container.removeEventListener('scroll', _self._check.bind(_self));
-    container.removeEventListener('resize', _self._check.bind(_self));
+    container.removeEventListener('scroll', this._fnCheck);
+    container.removeEventListener('resize', this._fnCheck);
 
     const scrollFrom = document.documentElement.scrollTop || document.body.scrollTop;
     let i = 0;
