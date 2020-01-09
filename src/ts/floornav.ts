@@ -1,54 +1,50 @@
 interface Iconfig {
-  container: any; // 滚动容器 window 或 id
-  base: string; // 计算区块位置的参照线, 值可以为 'center', 'top', 'bottom'
-  threshold: number; // 距离参照线多远即认为区块出现
-  scrollOffset: number; // 滚动差值, 假如页面有吸顶元素, 点击导航滚动到对应楼层时会被遮挡, 所以提供了这个参数来解决问题
-  activeClass: string; // 导航器当前项样式
-  showClass: string; // 导航器显示时添加的样式
-  isToggleShow: boolean; // 导航器是否要隐藏，默认为第一楼层出现后展示
+  container?: any;
+  base?: string;
+  threshold?: number;
+  scrollOffset?: number;
+  activeClass?: string;
+  showClass?: string;
+  isToggleShow?: boolean;
 }
 
-class Floornav {
+interface Nav {
+  id: string,
   config: Iconfig
-  private defaultConfig: Iconfig = {
-    container: window,
-    base: 'center',
-    threshold: 0,
-    scrollOffset: 0,
-    activeClass: 'active',
-    showClass: 'show',
-    isToggleShow: true,
-  };
+}
 
-  navContainerId: string;
+class DefaultConfig implements Iconfig {
+  container: object = window;
+  base: string = 'center';
+  threshold: number = 0;
+  scrollOffset: number = 0;
+  activeClass: string = 'active';
+  showClass: string = 'show';
+  isToggleShow: boolean = true;
+}
+
+class Floornav implements Nav {
+  id: string;
+  config: Iconfig;
+  navContainerId: string | undefined;
   navContainerEl: HTMLElement | null;
-  navItems: NodeListOf<Element>;
-  floorItmes: Array<Element | null>;
-  fnCheck: () => void;
+  navItems: NodeListOf<Element> | null;
+  floorItmes: Array<Element | null> = [];
+  update: () => void;
 
-  constructor(el: string, config?: Iconfig) {
-    // 生成最终配置
+  private defaultConfig: Iconfig = new DefaultConfig();
+
+  constructor(id: string, config?: Iconfig) {
+    this.id = id;
+    this.defaultConfig = new DefaultConfig();
     this.config = {
       ...this.defaultConfig,
       ...config,
-    }
+    };
 
-    if (!el) {
-      console.warn('Floornav: not found nav element');
-    }
-
-    this.navContainerId = el;
-
-    // 确定导航按钮父容器
-    const navContainerEl = document.getElementById(el);
+    const navContainerEl = document.getElementById(this.id);
     this.navContainerEl = navContainerEl;
-
-    if (!this.navContainerEl) {
-      console.warn('Floornav: not found nav container element');
-    }
-
-    // 搜集导航按钮
-    this.navItems = document.querySelectorAll(`#${this.navContainerId} a[href]`);
+    this.navItems = this.id ? document.querySelectorAll(`#${this.id} a[href]`) : null;
 
     // nodelist foreach
     if (window.NodeList && !NodeList.prototype.forEach) {
@@ -60,55 +56,59 @@ class Floornav {
       };
     }
 
-    // 搜集楼层列表
-    this.floorItmes = [];
-    this.navItems.forEach((elem) => {
-      const href = elem.getAttribute('href');
-      if (href) {
-        const floorItem = document.getElementById(href.slice(1));
-        this.floorItmes.push(floorItem);
-      }
-    });
-
-    // 滚动所绑定的检测方法，绑定 this 为 Floornav
-    this.fnCheck = this._check.bind(this);
+    this.update = () => {
+      this._initItems();
+      this.init();
+    }
 
     this.init();
   }
 
   init() {
     if (!this.navContainerEl) {
+      console.warn("[Floornav warning]: can't find the wrapper element of the floor navigation");
       return;
     }
+
+    this._initItems();
     this._initJump();
     this._initCheck();
 
-    // 初始时进行检测
+    // check start
     this._check();
   }
 
-  _setItemActive(elem: Element) {
-    const activeNavItem = document.querySelector(`#${this.navContainerId} a.active[href]`);
-    if (activeNavItem) { // null || element
+  private _initItems() {
+    this.floorItmes = [];
+
+    this.navItems && this.navItems.forEach((elem) => {
+      const href = elem.getAttribute('href');
+      if (href) {
+        const floorItem = document.getElementById(href.slice(1));
+        this.floorItmes.push(floorItem);
+      }
+    });
+  }
+
+  private _setItemActive(elem: Element) {
+    const activeNavItem = document.querySelector(`#${this.id} a.active[href]`);
+    if (activeNavItem) {
       activeNavItem.classList.remove('active');
     }
     elem.classList.add('active');
   }
 
-  _check() {
+  private _check() {
     const { threshold, base, container } = this.config;
     const height = container.innerHeight;
     let baseline;
     let containerTop = 0;
-
-    // ie window.innerHeight
 
     if (container !== window) {
       const containerEl = document.getElementById(container);
       containerTop = containerEl ? containerEl.getBoundingClientRect().top : 0;
     }
 
-    // 计算参考线位置
     if (base === 'top') {
       baseline = containerTop;
     } else if (base === 'bottom') {
@@ -117,11 +117,10 @@ class Floornav {
       baseline = containerTop + height / 2;
     }
 
-    // 如果导航器显示参数为 true
     if (!this.config.isToggleShow) {
       this.navContainerEl && (this.navContainerEl.style.display = 'block');
       this.navContainerEl && this.navContainerEl.classList.add('show');
-    } else { // 当滚动出现第一个楼层时, 导航器出现; 否则, 隐藏
+    } else {
       const firstFloorEl = this.floorItmes[0];
       if (firstFloorEl && firstFloorEl.getBoundingClientRect().top <= baseline + threshold) {
         this.navContainerEl && (this.navContainerEl.style.display = 'block');
@@ -134,31 +133,27 @@ class Floornav {
       }
     }
 
-    // 判断是否有楼层出现
     for (let i = this.floorItmes.length - 1; i >= 0; i--) {
       const currentFloorItem = this.floorItmes[i];
-      // 注：getBoundingClientRect().top 和 offsetTop 计算出来的位置有偏差，base 为 top时能体现，暂时多加1像素
+      // 注：getBoundingClientRect().top 和 offsetTop 计算出来的位置有偏差，base 为 top 时能体现，暂时多加1像素
       if (currentFloorItem && currentFloorItem.getBoundingClientRect().top <= baseline + threshold + 1) { // eslint-disable-line
         const id = currentFloorItem.getAttribute('id');
-        const $item = document.querySelector(`#${this.navContainerId} a[href="#${id}"]`);
+        const $item = document.querySelector(`#${this.id} a[href="#${id}"]`);
         $item && this._setItemActive($item);
         break;
       }
     }
   }
 
-  public _initJump() {
+  private _initJump() {
     const self = this;
     const { container, scrollOffset } = self.config;
 
-    this.navItems.forEach((item) => {
-      // 为导航项添加点击事件
+    this.navItems && this.navItems.forEach((item) => {
       item.addEventListener('click', (e: Event) => {
         const event = e || window.event;
         event.preventDefault();
 
-        // 所点击的导航项
-        const that = item;
         const navItem = item;
 
         if (!navItem) {
@@ -173,7 +168,7 @@ class Floornav {
         }
 
         // 高亮当前导航项
-        self._setItemActive(that);
+        self._setItemActive(navItem);
 
         // 计算距离，滚动显示导航器对应的楼层
         let containerTop = 0;
@@ -187,20 +182,21 @@ class Floornav {
           const rectTop = floorItem.getBoundingClientRect().top;
           const pageYOffset = (window.pageYOffset || document.documentElement.scrollTop) - (document.documentElement.clientTop || 0); // eslint-disable-line
           const offsetTop = rectTop + pageYOffset;
-          const scrollTo = offsetTop - scrollOffset - containerTop;
-          // 平滑滚动到指定楼层
+          const scrollTo = offsetTop - (scrollOffset || 0) - containerTop;
+
           self._scrollTo(floorItem, scrollTo, 300);
         }
       });
     });
   }
 
-  _initCheck() {
-    this.config.container.addEventListener('scroll', this.fnCheck);
-    this.config.container.addEventListener('resize', this.fnCheck);
+  public _initCheck() {
+    const _self = this;
+    _self.config.container.addEventListener('scroll', _self._check.bind(_self));
+    _self.config.container.addEventListener('resize', _self._check.bind(_self));
   }
 
-  _scrollTo(target: Element, scrollTo: number, time: number = 300) {
+  private _scrollTo(target: Element, scrollTo: number, time: number = 300) {
     if (!target) {
       return;
     }
@@ -208,11 +204,9 @@ class Floornav {
     const _self = this;
     const { container } = _self.config;
 
-    // 暂时取消滚动检测
-    container.removeEventListener('scroll', _self.fnCheck);
-    container.removeEventListener('resize', _self.fnCheck);
+    container.removeEventListener('scroll', _self._check.bind(_self));
+    container.removeEventListener('resize', _self._check.bind(_self));
 
-    // 缓动
     const scrollFrom = document.documentElement.scrollTop || document.body.scrollTop;
     let i = 0;
     const runEvery = 5;
@@ -224,7 +218,6 @@ class Floornav {
       if (i >= time) {
         clearInterval(interval);
 
-        // 恢复滚动检测
         _self._initCheck();
       }
     }, runEvery);

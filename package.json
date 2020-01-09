@@ -1,6 +1,6 @@
 {
   "name": "t-floornav",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "",
   "main": "/dist/floornav.min.js",
   "scripts": {
@@ -9,11 +9,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "floor",
-    "nav",
-    "javascript"
+    "typescript",
+    "javascript",
+    "nav"
   ],
-  "author": "",
+  "author": "liihom",
   "license": "ISC",
   "devDependencies": {
     "clean-webpack-plugin": "^3.0.0",
