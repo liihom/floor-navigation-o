@@ -5,7 +5,7 @@ module.exports = {
   entry: './src/ts/floornav.ts',
   output: {
     path: path.resolve(__dirname, '..', 'dist'),
-    filename: '[name].js',
+    filename: 'floornav.min.js',
     library: 'FloornavLibrary',
     libraryTarget: 'umd'
   },

@@ -30,16 +30,16 @@ A floor navigation component based on typescript and vanilla js.
 
 Please write the style yourself.
 
-install [`t-floornav npm`](https://www.npmjs.com/package/t-floornav).
+install [`floor-navigation npm`](https://www.npmjs.com/package/floor-navigation).
 
 ``` bash
-npm i t-floornav --save
+npm i floor-navigation --save
 ```
 
-import t-floornav.
+import floor-navigation.
 
 ``` js
-import Floornav from 't-floornav';
+import Floornav from 'floor-navigation';
 
 new Floornav({
   id: 'floornav',
@@ -63,3 +63,4 @@ new Floornav({
 | `activeClass` | the active class of the current floor item  | `active` | `string`  |
 | `showClass` |  class at the floor display      |   `show` | `string` |
 | `isToggleShow` | Whether the floor disappears with the content  | `true` | `boolean` |
+| `navActiveCallback` | the navigation active callback | -- | `function` |

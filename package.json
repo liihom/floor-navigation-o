@@ -1,6 +1,6 @@
 {
-  "name": "t-floornav",
-  "version": "1.0.2",
+  "name": "floor-navigation",
+  "version": "1.0.0",
   "description": "",
   "main": "/dist/floornav.min.js",
   "scripts": {

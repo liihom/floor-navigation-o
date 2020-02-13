@@ -3,9 +3,11 @@ interface Iconfig {
   base?: string;
   threshold?: number;
   scrollOffset?: number;
+  scrollTime?: number;
   activeClass?: string;
   showClass?: string;
   isToggleShow?: boolean;
+  navActiveCallback?: (el: Element) => void;
 }
 
 interface Nav {
@@ -91,11 +93,13 @@ class Floornav implements Nav {
   }
 
   private _setItemActive(elem: Element) {
-    const activeNavItem = document.querySelector(`#${this.id} a.active[href]`);
+    const { activeClass = 'active', navActiveCallback } = this.config;
+    const activeNavItem = document.querySelector(`#${this.id} a.${activeClass}[href]`);
     if (activeNavItem) {
-      activeNavItem.classList.remove('active');
+      activeNavItem.classList.remove(activeClass);
     }
-    elem.classList.add('active');
+    elem.classList.add(activeClass);
+    navActiveCallback && navActiveCallback(elem);
   }
 
   private _check() {
@@ -151,7 +155,7 @@ class Floornav implements Nav {
 
   private _initJump() {
     const self = this;
-    const { container, scrollOffset } = self.config;
+    const { container, scrollOffset, scrollTime } = self.config;
 
     this.navItems && this.navItems.forEach((item) => {
       item.addEventListener('click', (e: Event) => {
@@ -188,7 +192,7 @@ class Floornav implements Nav {
           const offsetTop = rectTop + pageYOffset;
           const scrollTo = offsetTop - (scrollOffset || 0) - containerTop;
 
-          self._scrollTo(floorItem, scrollTo, 300);
+          self._scrollTo(floorItem, scrollTo, scrollTime);
         }
       });
     });
