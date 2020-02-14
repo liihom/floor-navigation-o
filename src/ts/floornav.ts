@@ -225,8 +225,9 @@ class Floornav implements Nav {
       document.documentElement.scrollTop = document.body.scrollTop = targetValue; // eslint-disable-line
       if (i >= time) {
         clearInterval(interval);
-
-        _self._initCheck();
+        setTimeout(() => { // 延迟激活滑动检测
+          _self._initCheck();
+        }, 20);
       }
     }, runEvery);
   }
