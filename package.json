@@ -1,6 +1,6 @@
 {
   "name": "floor-navigation",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "/dist/floornav.min.js",
   "scripts": {
